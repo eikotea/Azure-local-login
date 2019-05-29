@@ -1,13 +1,11 @@
-function login()
-{
+function login(){
     clear-Host
     Write-Host "Benutzen sie MFA(Multi Faktor Authentifizierung)?"
     $MFA = Read-Host -Prompt "(J/N)"
     $TenantName = Read-Host -Prompt "Tenat Name"
     $urlSPOAdmin = "https://$($TenantName)-admin.sharepoint.com"
     Clear-Host
-    if (($MFA.ToLower()) -eq "j")
-    {
+    if (($MFA.ToLower()) -eq "j"){
         Write-Host -Verbose "Einloggen" -NoNewline
         for($i1 = 0; $i1 -lt 2; $i1++){
             Write-Host -NoNewline(".")
@@ -21,8 +19,7 @@ function login()
             Write-Host "Konnte keine Verbindung mit SharePoint-Online herstellen" -ForegroundColor Yellow
         }
     }
-    else
-    {
+    else{
         $AdminUsername = Read-Host -Prompt "E-Mail"
         $AdminPassword = Read-Host -Prompt "Passwort" -AsSecureString
             
