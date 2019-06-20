@@ -1,9 +1,9 @@
-<############################################>
-<# Skript um Module zu installieren         #>
-<# die PS benötigt um Azure-VM Status       #>
-<# abfrage durchzuführen                    #>
-<# Set-ExecutionPolicy RemoteSigned         #>
-<############################################>
+<######################################>
+<# Skript um Module zu installieren   #>
+<# die PS benötigt um Azure-VM Status #>
+<# abfrage durchzuführen              #>
+<# Set-ExecutionPolicy RemoteSigned   #>
+<######################################>
 $installmoduleAzRM = install-module -Name AzureRM
 $installmoduleAz = Install-Module -Name Az -AllowClobber
 $installmoduleSPO = Install-Module -Name Microsoft.Online.SharePoint.PowerShell
