@@ -1,42 +1,88 @@
 function login(){
-    clear-Host
-    Write-Host "Benutzen sie MFA(Multi Faktor Authentifizierung)?"
-    $MFA = Read-Host -Prompt "(J/N)"
-    $TenantName = Read-Host -Prompt "Tenat Name"
+    param(
+        [switch]$SPO,
+        [switch]$MFA,
+        [string]$TenantName,
+        [string]$subid
+    )
     $urlSPOAdmin = "https://$($TenantName)-admin.sharepoint.com"
-    Clear-Host
-    if (($MFA.ToLower()) -eq "j"){
-        Write-Host -Verbose "Einloggen" -NoNewline
-        for($i1 = 0; $i1 -lt 2; $i1++){
-            Write-Host -NoNewline(".")
-            start-sleep -s 1
-        }Write-Host (".")
-        Login-AzureRmAccount | out-null
+    if ($MFA){
         try{
-            Connect-SPOService -Url $urlSPOAdmin -Credential $adminCredentials -ErrorAction SilentlyContinue| out-null
+            Login-AzureRmAccount | out-null
         }
         catch{
-            Write-Host "Konnte keine Verbindung mit SharePoint-Online herstellen" -ForegroundColor Yellow
+            log -text "Konnte keine Verbindung mit dem AzureRM Account herstellen: $_" -err
+        }
+        log -text "In Azure eingeloggt"
+        #SUB
+        if($subid){
+            try{
+                Select-AzureRmSubscription $subid | out-null
+            }
+            catch{
+                log -text "Konnte nicht die angegebene Subscription(zusammenhang: Azure Subscription(Select-AzureRmSubscription)) auswaehlen!" -warning
+            }
+            try{
+                Set-AzureRmContext -Subscription $subid | out-null
+            }
+            catch{
+                log -text "Konnte nicht die angegebene Subscription(zusammenhang: Azure Kontext(Set-AzureRmContext)) auswaehlen!" -warning
+            }
+        }
+        #SPO
+        if($SPO){
+            try{
+                log -text "Starte authentifizierung in SharePoint-Online"
+                Connect-SPOService -Url $urlSPOAdmin -ErrorAction SilentlyContinue| out-null
+            }
+            catch{
+                if(!($TenantName)){
+                    log -text "Tenantname ist nicht angegeben. Geben sie einen Tenantnamen an und führen sie das Skript erneut aus!" -err
+                }
+                log -text "Konnte keine Verbindung mit SharePoint-Online herstellen: $_" -err
+            }
+            log -text "Authentifizierung in SharePoint-Online erfolgreich"
         }
     }
     else{
         $AdminUsername = Read-Host -Prompt "E-Mail"
-        $AdminPassword = Read-Host -Prompt "Passwort" -AsSecureString
-            
+        $AdminPassword = Read-Host -Prompt "Passwort" -AsSecureString  
         $adminCredentials = New-Object -TypeName System.Management.Automation.PSCredential -argumentlist $AdminUsername, $AdminPassword
-        Write-Host -Verbose "Einloggen" -NoNewline
-        for($i1 = 0; $i1 -lt 2; $i1++){
-            Write-Host -NoNewline(".")
-            start-sleep -s 1
-        }Write-Host (".")
-        Login-AzureRmAccount -Credential $adminCredentials | out-null
+        log -text "Email und Passwort erfolgreich eingelesen"
         try{
-            Connect-SPOService -Url $urlSPOAdmin -Credential $adminCredentials -ErrorAction SilentlyContinue| out-null
+            Login-AzureRmAccount -Credential $adminCredentials | out-null
         }
         catch{
-            Write-Host "Konnte keine Verbindung mit SharePoint-Online herstellen" -ForegroundColor Yellow
+            log -text "Konnte keine Verbindung mit dem AzureRM Account herstellen: $_" -err
+        }
+        log -text "In Azure eingeloggt"
+        #SUB
+        if($subid){
+            try{
+                Select-AzureRmSubscription $subid | out-null
+            }
+            catch{
+                log -text "Konnte nicht die angegebene Subscription(zusammenhang: Azure Subscription(Select-AzureRmSubscription)) auswaehlen!" -warning
+            }
+            try{
+                Set-AzureRmContext -Subscription $subid | out-null
+            }
+            catch{
+                log -text "Konnte nicht die angegebene Subscription(zusammenhang: Azure Kontext(Set-AzureRmContext)) auswaehlen!" -warning
+            }
+        }
+        if($SPO){
+            try{
+                log -text "Starte authentifizierung in SharePoint-Online"
+                Connect-SPOService -Url $urlSPOAdmin -Credential $adminCredentials -ErrorAction SilentlyContinue| out-null
+            }
+            catch{
+                if(!($TenantName)){
+                    log -text "Tenantname ist nicht angegeben. Geben sie einen Tenantnamen an und führen sie das Skript erneut aus!" -err
+                }
+                log -text "Konnte keine Verbindung mit SharePoint-Online herstellen: $_" -err
+            }
+            log -text "Authentifizierung in SharePoint-Online erfolgreich"
         }
     }
-    Write-Host -ForegroundColor Green "Done"
 }
-login
