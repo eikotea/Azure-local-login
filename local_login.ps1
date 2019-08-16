@@ -14,22 +14,6 @@ function login(){
             log -text "Konnte keine Verbindung mit dem AzureRM Account herstellen: $_" -err
         }
         log -text "In Azure eingeloggt"
-        #SUB
-        if($subid){
-            try{
-                Select-AzureRmSubscription $subid | out-null
-            }
-            catch{
-                log -text "Konnte nicht die angegebene Subscription(zusammenhang: Azure Subscription(Select-AzureRmSubscription)) auswaehlen!" -warning
-            }
-            try{
-                Set-AzureRmContext -Subscription $subid | out-null
-            }
-            catch{
-                log -text "Konnte nicht die angegebene Subscription(zusammenhang: Azure Kontext(Set-AzureRmContext)) auswaehlen!" -warning
-            }
-        }
-        #SPO
         if($SPO){
             try{
                 log -text "Starte authentifizierung in SharePoint-Online"
@@ -56,21 +40,6 @@ function login(){
             log -text "Konnte keine Verbindung mit dem AzureRM Account herstellen: $_" -err
         }
         log -text "In Azure eingeloggt"
-        #SUB
-        if($subid){
-            try{
-                Select-AzureRmSubscription $subid | out-null
-            }
-            catch{
-                log -text "Konnte nicht die angegebene Subscription(zusammenhang: Azure Subscription(Select-AzureRmSubscription)) auswaehlen!" -warning
-            }
-            try{
-                Set-AzureRmContext -Subscription $subid | out-null
-            }
-            catch{
-                log -text "Konnte nicht die angegebene Subscription(zusammenhang: Azure Kontext(Set-AzureRmContext)) auswaehlen!" -warning
-            }
-        }
         if($SPO){
             try{
                 log -text "Starte authentifizierung in SharePoint-Online"
@@ -83,6 +52,36 @@ function login(){
                 log -text "Konnte keine Verbindung mit SharePoint-Online herstellen: $_" -err
             }
             log -text "Authentifizierung in SharePoint-Online erfolgreich"
+        }        
+    }
+    if($subid){
+        if($tenantid){
+            try{
+                Select-AzSubscription $subid -Tenant $tenantid| out-null
+            }
+            catch{
+                log -text "Konnte nicht die angegebene Subscription(zusammenhang: Azure Subscription(Select-AzureRmSubscription)) auswaehlen!" -warning
+            }
+            try{
+                Set-AzContext -Subscription $subid -Tenant $tenantid| out-null
+            }
+            catch{
+                log -text "Konnte nicht die angegebene Subscription(zusammenhang: Azure Kontext(Set-AzureRmContext)) auswaehlen!" -warning
+            }
+        }
+        else{
+            try{
+                Select-AzSubscription $subid | out-null
+            }
+            catch{
+                log -text "Konnte nicht die angegebene Subscription(zusammenhang: Azure Subscription(Select-AzureRmSubscription)) auswaehlen!" -warning
+            }
+            try{
+                Set-AzContext -Subscription $subid | out-null
+            }
+            catch{
+                log -text "Konnte nicht die angegebene Subscription(zusammenhang: Azure Kontext(Set-AzureRmContext)) auswaehlen!" -warning
+            }
         }
     }
 }
