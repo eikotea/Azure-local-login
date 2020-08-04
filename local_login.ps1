@@ -37,7 +37,7 @@ function login(){
             Login-AzureRmAccount -Credential $adminCredentials | out-null
         }
         catch{
-            log -text "Konnte keine Verbindung mit dem AzureRM Account herstellen: $_" -err
+             log -text "Konnte keine Verbindung mit dem AzureRM Account herstellen: $_" -err
         }
         log -text "In Azure eingeloggt"
         if($SPO){
